@@ -228,4 +228,4 @@ center_text "Disk Usage: $(df -h / | grep / | awk '{print $3 "/" $2}')"
 center_text "--------------------------------"
 
 # Navigate to default working directory on new shell session
-cd /mnt/c/dev
+cd /mnt/c

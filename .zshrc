@@ -244,4 +244,4 @@ EOL
 }
 
 # Navigate to default working directory on new shell session
-cd /mnt/c/dev
+cd /mnt/c
