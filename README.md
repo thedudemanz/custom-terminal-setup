@@ -382,6 +382,5 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 - Initial Release: Basic terminal setup for Zsh.
-- Git Integration: Added Git shortcuts.
-- System Info Display: Display basic system information.
+- Git Integration: Added Git shortcuts..
 
