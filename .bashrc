@@ -205,7 +205,6 @@ center_text "--------------------------------"
 
 # Show a custom prompt with username, host, directory, git branch, and status
 PS1='\[\033[01;32m\]tdmz@\h\[\033[01;34m\]:\[\033[01;34m\]\w\[\033[01;33m\] $(parse_git_branch) $(parse_git_dirty)\[\033[01;35m\] [$(date +%H:%M)] [IP: $(hostname -I | cut -d" " -f1)]\[\033[00m\]\$ '
-
 # Set terminal title to user@host:current_directory
 case "$TERM" in
     xterm*|rxvt*)

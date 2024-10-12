@@ -22,7 +22,6 @@ Before you start, make sure you have the following installed:
 ### For Zsh
 - **Zsh (Z shell)**: Commonly used with Oh My Zsh.
 - **Oh My Zsh**: Framework for managing Zsh configurations.
-- **Powerlevel10k** (optional but recommended): A fast, customizable prompt.
 
 ### For Bash
 - **Bash**: Default shell on many Unix systems.
