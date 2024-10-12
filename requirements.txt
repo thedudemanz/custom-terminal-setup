@@ -1,0 +1,13 @@
+# Requirements for terminal setup
+net-tools      # For the 'netstat' command used in 'ports'
+curl           # For fetching external IP and weather data
+lm-sensors     # For monitoring system temperature (used in syshealth)
+git            # For Git-related shortcuts and functionality
+zsh            # For Zsh shell (if using Zsh setup)
+bash-completion # For Bash completion (if using Bash setup)
+zsh-syntax-highlighting # For Zsh syntax highlighting plugin
+zsh-autosuggestions # For Zsh auto-suggestions plugin
+python3        # For Python virtual environment creation
+docker         # For Docker-related shortcuts (if using Docker)
+kubectl        # For Kubernetes-related shortcuts (if using Kubernetes)
+awscli         # For AWS CLI shortcuts (if using AWS-related functions)

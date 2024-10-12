@@ -9,12 +9,6 @@ export PATH="$HOME/.local/bin:$PATH"
 # Disable command auto-correction.
 DISABLE_CORRECTION="true"
 
-# Set the maximum nesting level to prevent recursion errors.
-export FUNCNEST=1000
-
-# Display dots while waiting for completions.
-COMPLETION_WAITING_DOTS="true"
-
 # Change history timestamp format to "mm/dd/yyyy".
 HIST_STAMPS="mm/dd/yyyy"
 
@@ -31,7 +25,121 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 
 # =====================
+# CUSTOM ALIASES AND SHORTCUTS
+# =====================
+
+# Directory Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias ~='cd ~'  # Quickly go to the home directory
+
+# Quick directory listing
+alias ll='ls -alhF --group-directories-first'
+alias la='ls -A'
+alias l='ls -CF'
+alias lt='ls -lhtr'
+
+# Git Aliases for Speed
+alias gs='git status 2>/dev/null || echo "Not inside a Git repository!"'
+alias ga='git add .'
+alias gc='git commit -m'
+alias gco='git checkout'
+alias gp='git push'
+alias gl='git log --oneline --graph --decorate --all'
+alias gpo='git push origin $(git rev-parse --abbrev-ref HEAD)'
+
+# Docker Aliases (if applicable)
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias drm='docker rm $(docker ps -a -q)'
+alias dclean='docker system prune -a'
+
+# Kubernetes Aliases (if applicable)
+alias k='kubectl'
+alias kgp='kubectl get pods'
+alias kgs='kubectl get services'
+alias kctx='kubectl config get-contexts'
+alias kcn='kubectl config use-context'
+
+# AWS CLI Aliases (if applicable)
+alias awsprofile='aws configure --profile'
+
+# System Aliases
+alias update='sudo apt update && sudo apt upgrade -y'
+alias cleanup='sudo apt autoremove -y && sudo apt autoclean'
+alias reloadzsh='source ~/.zshrc'
+alias showip='hostname -I'
+alias ports='sudo netstat -tulanp | grep LISTEN'
+alias resources='top -o %MEM'
+
+# Network Utilities
+alias myip='curl -s ifconfig.me'
+alias weather='curl -s wttr.in'
+
+# File Management
+alias rm='rm -f'
+alias cp='cp -rf'
+alias mv='mv -f'
+
+# Python Virtual Environment
+alias venv='python3 -m venv .venv && source .venv/bin/activate'
+alias activate='source .venv/bin/activate'
+alias deactivate='deactivate'
+
+# VS Code Integration
+alias codep='code . && exit'
+
+# Show top 10 most frequently used commands
+alias topcmds="history | awk '{CMD[\$2]++;count++;} END { for (a in CMD)print CMD[a] \" \" a;}' | sort -rn | head -10"
+
+# =====================
 # CUSTOM FUNCTIONS
+# =====================
+
+# Quick navigation to frequently accessed directories
+proj() {
+    if [ -d "/mnt/c/dev/$1" ]; then
+        cd /mnt/c/dev/$1
+    else
+        echo "The directory /mnt/c/dev/$1 does not exist."
+    fi
+}
+
+# Create a new project directory and navigate into it
+mkproj() {
+    mkdir -p /mnt/c/dev/$1 && cd /mnt/c/dev/$1
+    echo "Created and moved to /mnt/c/dev/$1"
+}
+
+# Show current branch and status in the command prompt
+parse_git_branch() {
+    git branch 2>/dev/null | grep '*' | sed 's/* //'
+}
+
+# Show git status symbols (✔ for changes staged, ✘ for unstaged changes)
+parse_git_dirty() {
+    git diff --quiet 2>/dev/null
+    [ $? -eq 1 ] && echo "✘" || echo "✔"
+}
+
+# =====================
+# PROMPT CONFIGURATION
+# =====================
+# Custom prompt with username, host, directory, git branch, and status
+custom_prompt() {
+    local ip_address=$(hostname -I | cut -d' ' -f1)
+
+    # Properly define the prompt with a new line before the arrow and $ sign
+    PROMPT='%F{green}%n@%m%f:%F{blue}%~%f $(parse_git_branch) $(parse_git_dirty) %F{purple} [%D{%H:%M}]%f %F{cyan}[IP: '"$ip_address"']%f
+→ %F{white}$ %f'
+}
+
+# Apply the custom prompt format.
+precmd_functions+=(custom_prompt)
+
+# =====================
+# SYSTEM INFORMATION AND WELCOME MESSAGE
 # =====================
 # Function to print a centered welcome message
 center_text() {
@@ -59,109 +167,14 @@ display_welcome_message() {
     center_text "--------------------------------"
 }
 
-# =====================
-# PROMPT CONFIGURATION
-# =====================
-# Parse current Git branch and show in prompt
-parse_git_branch() {
-    git branch 2>/dev/null | grep '*' | sed 's/* //'
-}
-
-# Show git status symbols (✔ for changes staged, ✘ for unstaged changes)
-parse_git_dirty() {
-    git diff --quiet 2>/dev/null
-    [ $? -eq 1 ] && echo "✘" || echo "✔"
-}
-
-# Custom prompt definition with proper new line placement
-custom_prompt() {
-    local ip_address=$(hostname -I | cut -d' ' -f1)
-
-    # Properly define the prompt with a new line before the arrow and $ sign
-    PROMPT='%F{green}%n@%m%f:%F{blue}%~%f $(parse_git_branch) $(parse_git_dirty) %F{purple} [%D{%H:%M}]%f %F{cyan}[IP: '"$ip_address"']%f
-→ %F{white}$ %f'
-}
-
-# Apply the custom prompt format.
-precmd_functions+=(custom_prompt)
-
-# =====================
-# HELPER FUNCTION TO DISPLAY COMMANDS
-# =====================
-# Wrapper function to display the command being executed
-run_command() {
-    echo "Executing: $@"
-    eval "$@"
-}
-
-# =====================
-# RECREATING ALIASES WITH FUNCTIONS
-# =====================
-# Directory Navigation Functions
-cd_up_one() { run_command "cd .."; }
-cd_up_two() { run_command "cd ../.."; }
-cd_up_three() { run_command "cd ../../.."; }
-go_home() { run_command "cd ~"; }
-
-# Directory listing functions
-list_all_long() { run_command "ls -alhF --group-directories-first"; }
-list_all() { run_command "ls -A"; }
-list_compact() { run_command "ls -CF"; }
-list_time_sorted() { run_command "ls -lhtr"; }
-
-# Git functions
-git_status() { run_command "git status"; }
-git_add_all() { run_command "git add ."; }
-git_commit() { run_command "git commit -m '$@'"; }
-git_checkout() { run_command "git checkout '$@'"; }
-git_push() { run_command "git push"; }
-git_log() { run_command "git log --oneline --graph --decorate --all"; }
-git_push_origin() { run_command "git push origin $(git rev-parse --abbrev-ref HEAD)"; }
-
-# Docker functions (if applicable)
-docker_ps() { run_command "docker ps"; }
-docker_ps_all() { run_command "docker ps -a"; }
-docker_rm_all() { run_command "docker rm $(docker ps -a -q)"; }
-docker_clean() { run_command "docker system prune -a"; }
-
-# Kubernetes functions (if applicable)
-kubectl_cmd() { run_command "kubectl '$@'"; }
-kubectl_get_pods() { run_command "kubectl get pods"; }
-kubectl_get_services() { run_command "kubectl get services"; }
-kubectl_get_contexts() { run_command "kubectl config get-contexts"; }
-kubectl_use_context() { run_command "kubectl config use-context"; }
-
-# AWS CLI functions (if applicable)
-aws_profile() { run_command "aws configure --profile '$@'"; }
-
-# System functions
-system_update() { run_command "sudo apt update && sudo apt upgrade -y"; }
-system_cleanup() { run_command "sudo apt autoremove -y && sudo apt autoclean"; }
-show_ip() { run_command "hostname -I"; }
-list_ports() { run_command "sudo netstat -tulanp | grep LISTEN"; }
-system_resources() { run_command "top -o %MEM"; }
-
-# File management functions
-safe_rm() { run_command "rm -f '$@'"; }
-safe_cp() { run_command "cp -rf '$@'"; }
-safe_mv() { run_command "mv -f '$@'"; }
-
-# Python virtual environment management
-python_venv() { run_command "python3 -m venv .venv && source .venv/bin/activate"; }
-python_activate() { run_command "source .venv/bin/activate"; }
-python_deactivate() { deactivate; }
-
-# VS Code command
-code_project() { run_command "code . && exit"; }
-
-# Show top 10 most frequently used commands
-top_cmds() { run_command "history | awk '{CMD[\$2]++;count++;} END { for (a in CMD)print CMD[a] \" \" a;}' | sort -rn | head -10"; }
-
 # Display welcome message on startup
 display_welcome_message
 
+# =====================
+# GENERATE CHEATSHEET
+# =====================
 cheatsheet() {
-    local output_file="/mnt/c/dev/cheatsheet.md"
+    local output_file="/mnt/c/dev/zsh_cheatsheet.md"
     echo "Generating Cheatsheet at $output_file"
     cat <<EOL > $output_file
 ### Cheatsheet: Terminal Commands & Shortcuts
