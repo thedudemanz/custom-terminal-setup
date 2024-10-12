@@ -281,10 +281,6 @@ All notable changes to this project will be documented in this file.
 
 ------------------------------------------------------------------------------------------------------------------------
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Acknowledgments
 
 Special thanks to the following resources and contributors that helped inspire and develop this terminal setup:
