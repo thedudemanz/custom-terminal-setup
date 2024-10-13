@@ -1,9 +1,9 @@
 # Custom Zsh and TMUX Terminal Setup
 
 ## Overview
-This repository contains a customized Zsh and TMUX terminal configuration tailored to enhance productivity for DevOps engineers and software developers. The configuration includes features like a personalized prompt, dynamic Git branch display, virtual environment detection, and a custom TMUX status bar.
+This repository contains a customized Zsh and TMUX terminal configuration tailored to enhance productivity for engineers and software developers. The configuration includes features like a personalized prompt, dynamic Git branch display, virtual environment detection, and a custom TMUX status bar.
 
-Developed by a Fortune 300 DevOps engineer with four years of experience, this setup aims to streamline workflows, improve command-line usability, and provide relevant context right at your fingertips.
+Developed by a DevOps engineer with four years of experience, this setup aims to streamline workflows, improve command-line usability, and provide relevant context right at your fingertips.
 
 ## Features
 
@@ -58,4 +58,37 @@ Developed by a Fortune 300 DevOps engineer with four years of experience, this s
      ```
    - **TMUX**:
      ```bash
-     tmux
+     tmux source-file ~/.tmux.conf
+     ```
+
+4. **Start Zsh and TMUX**
+   - Ensure Zsh is your default shell by running:
+     ```bash
+     chsh -s $(which zsh)
+     ```
+   - Open a new terminal window and Zsh will automatically start TMUX if not already running.
+
+## Usage
+
+### Zsh Custom Commands
+- **Navigation**:
+  - `cd_up_one` - Navigate up one directory.
+  - `go_home` - Navigate to your home directory.
+- **Git Shortcuts**:
+  - `git_status` - Show Git status.
+  - `git_push_origin` - Push current branch to origin.
+- **System Utilities**:
+  - `system_update` - Update and upgrade system packages.
+  - `list_ports` - List all active listening ports.
+
+### TMUX Status Bar
+The TMUX status bar is configured to provide important contextual information without clutter. The left side displays user, hostname, IP, working directory, active virtual environment, and Git branch. The right side shows the current date, time, the number of active TMUX panes (tasks), and shell type.
+
+## Screenshots
+Include screenshots of the terminal setup to demonstrate the custom prompt, status bar, and other features.
+
+## Contributing
+If you have suggestions for improvements or want to add features, feel free to submit a pull request. Contributions are always welcome!
+
+## License
+This project is licensed under the MIT License.s
