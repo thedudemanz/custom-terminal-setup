@@ -21,6 +21,12 @@ shopt -s histappend
 # Check window size after each command and update LINES and COLUMNS
 shopt -s checkwinsize
 
+# Enable "**" to match all files and directories recursively
+# shopt -s globstar
+
+# Make 'less' more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
+
 # Enable color support of common commands and set default aliases
 alias ls='ls --color=auto'
 alias grep='grep --color=auto'
@@ -82,7 +88,7 @@ alias update='sudo apt update && sudo apt upgrade -y'
 alias cleanup='sudo apt autoremove -y && sudo apt autoclean'
 alias reloadbash='source ~/.bashrc'
 alias showip='hostname -I'
-alias ports='sudo netstat -tulanp | grep LISTEN'  # Fix for missing ports alias
+alias ports='sudo netstat -tulanp | grep LISTEN'
 alias resources='top -o %MEM'
 
 # Network Utilities
@@ -103,7 +109,7 @@ alias deactivate='deactivate'
 alias codep='code . && exit'
 
 # Show top 10 most frequently used commands
-alias topcmds="history | awk '{CMD[\$2]++;count++;} END { for (a in CMD)print CMD[a] \" \" a;}' | sort -rn | head -10"
+alias topcmds="history | awk '{CMD[$2]++;count++;} END { for (a in CMD)print CMD[a] \" \" a;}' | sort -rn | head -10"
 
 # =====================
 # CUSTOM FUNCTIONS
@@ -135,15 +141,70 @@ parse_git_dirty() {
     [ $? -eq 1 ] && echo "✘" || echo "✔"
 }
 
+# Display battery status (if applicable, for laptops)
+battery_status() {
+    if [ -f /sys/class/power_supply/BAT0/capacity ]; then
+        echo "Battery: $(cat /sys/class/power_supply/BAT0/capacity)%"
+    fi
+}
+
+# Generate a cheatsheet of custom commands, aliases, and functions
+cheatsheet() {
+    local output_file="/mnt/c/dev/bashrc_cheatsheet.md"
+    echo "Generating Cheatsheet at $output_file"
+    cp /mnt/data/bashrc_documentation.md "$output_file"
+    echo "Cheatsheet created successfully at $output_file"
+}
+
+# Manage a simple TODO list
+todo() {
+    local todo_file="/mnt/c/dev/todo.txt"
+    case "$1" in
+        add) shift; echo "$*" >> "$todo_file"; echo "Added: $*" ;;
+        list) echo "TODO List:"; cat "$todo_file" ;;
+        clear) > "$todo_file"; echo "TODO list cleared." ;;
+        *) echo "Usage: todo add <task> | todo list | todo clear" ;;
+    esac
+}
+
+# Display system health status
+syshealth() {
+    echo "System Health Check:"
+    echo "---------------------"
+    echo "CPU Load: $(uptime | awk -F'load average:' '{ print $2 }')"
+    echo "Memory Usage: $(free -h | grep Mem | awk '{print $3 "/" $2}')"
+    echo "Disk Usage: $(df -h / | grep / | awk '{print $3 "/" $2}')"
+    if command -v sensors &> /dev/null; then
+        sensors
+    else
+        echo "Install 'lm-sensors' to monitor temperature."
+    fi
+}
+
 # =====================
 # ENVIRONMENT VARIABLES AND PROMPT
 # =====================
 
+# Default editor
+export EDITOR="code"
+
 # Custom PATH additions (if needed)
 export PATH="$HOME/.local/bin:$PATH"
 
+# Display a centered welcome message on terminal startup
+center_text() {
+    local term_width=$(tput cols)
+    local padding=$(($term_width / 2 - ${#1} / 2))
+    printf "%${padding}s%s\n" " " "$1"
+}
+
+# Personal welcome message
+center_text "--------------------------------"
+center_text "🚀 Welcome back, tdmz! One line at a time 🚀"
+center_text "--------------------------------"
+
 # Show a custom prompt with username, host, directory, git branch, and status
-PS1='\[\033[01;32m\]tdmz@\h\[\033[01;34m\]:\[\033[01;34m\]\w\[\033[01;33m\] $(parse_git_branch) $(parse_git_dirty)\[\033[01;35m\] [$(date +%H:%M)] [IP: $(hostname -I | cut -d" " -f1)]\[\033[00m\]\$ '
+PS1='\[\033[01;32m\]tdmz@\h\[\033[01;34m\]:\[\033[01;34m\]\w\[\033[01;33m\] $(parse_git_branch) $(parse_git_dirty) \[\033[01;35m\] [$(date +%H:%M)] [IP: $(hostname -I | cut -d" " -f1)]\[\033[00m\]\n→ \$ '
 
 # Set terminal title to user@host:current_directory
 case "$TERM" in
@@ -153,6 +214,18 @@ case "$TERM" in
     *)
         ;;
 esac
+
+# Show battery status on session start (if on a laptop)
+battery_status
+
+# Display system information on startup
+center_text "--------------------------------"
+center_text "🖥️ System Information 🖥️"
+center_text "--------------------------------"
+center_text "Uptime: $(uptime -p)"
+center_text "Memory Usage: $(free -h | grep Mem | awk '{print $3 "/" $2}')"
+center_text "Disk Usage: $(df -h / | grep / | awk '{print $3 "/" $2}')"
+center_text "--------------------------------"
 
 # Navigate to default working directory on new shell session
 cd /mnt/c
