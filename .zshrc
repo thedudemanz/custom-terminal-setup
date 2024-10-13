@@ -30,6 +30,26 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
 # Enable zsh-syntax-highlighting.
 ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets pattern)
 
+# Detect and display the Python virtual environment in the prompt
+virtualenv_prompt() {
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        echo "%F{yellow}($(basename $VIRTUAL_ENV))%f "
+    fi
+}
+
+# Update custom prompt to show the virtual environment
+custom_prompt() {
+    local ip_address=$(hostname -I | cut -d' ' -f1)
+    
+    # Add virtualenv info to the prompt
+    PROMPT='$(virtualenv_prompt)%F{green}%n@%m%f:%F{blue}%~%f $(parse_git_branch) $(parse_git_dirty) %F{purple} [%D{%H:%M}]%f %F{cyan}[IP: '"$ip_address"']%f
+→ %F{white}$ %f'
+}
+
+# Apply the custom prompt format
+precmd_functions+=(custom_prompt)
+
+
 # =====================
 # CUSTOM FUNCTIONS
 # =====================
